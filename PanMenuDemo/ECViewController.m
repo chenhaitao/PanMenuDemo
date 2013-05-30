@@ -57,7 +57,7 @@ static const CGFloat speedPixel = 0.0015;
     CGFloat here = self.contentView.frame.origin.x;
     if (here > 0) {
         self.leftMenuViewController.view.hidden = NO;
-       self.leftLayer.colors = @[(__bridge id)[UIColor colorWithWhite:0.0f alpha:(LeftMenuMaxWidth - here)/(LeftMenuMaxWidth * MaxAlpha)].CGColor,(__bridge id)[UIColor colorWithWhite:0.0f alpha:(LeftMenuMaxWidth - here)/(LeftMenuMaxWidth * MaxAlpha)].CGColor];
+       self.leftLayer.colors = @[(__bridge id)[UIColor colorWithWhite:0.0f alpha:(LeftMenuMaxWidth - here)/(LeftMenuMaxWidth * MaxAlpha)].CGColor,(__bridge id)[UIColor colorWithWhite:0.0f alpha:(LeftMenuMaxWidth - here)/LeftMenuMaxWidth * MaxAlpha].CGColor];
         self.leftMenuViewController.view.transform = CGAffineTransformMakeScale(1-(LeftMenuMaxWidth - here)/LeftMenuMaxWidth *(1-MinScale), 1 - (LeftMenuMaxWidth - here)/LeftMenuMaxWidth *(1-MinScale));
     }
     
@@ -69,33 +69,59 @@ static const CGFloat speedPixel = 0.0015;
         CGPoint now = [sender locationInView:self.view];
         CGFloat movingDistance = now.x - last.x;
         last = now;
-        if (fabs(here) <= LeftMenuMaxWidth) {
-            [UIView animateWithDuration:(movingDistance*speedPixel) animations:^{
-                self.contentView.transform = CGAffineTransformTranslate(self.contentView.transform, movingDistance,0);
-            }];
-        }
+            if (movingDistance > 0) {
+                if (here <= LeftMenuMaxWidth) {
+                    [UIView animateWithDuration:(movingDistance*speedPixel) animations:^{
+                        self.contentView.transform = CGAffineTransformTranslate(self.contentView.transform, movingDistance,0);
+                    }];
+                }
+        
+            }else{
+                if (here > 0) {
+                    [UIView animateWithDuration:(-movingDistance*speedPixel) animations:^{
+                        self.contentView.transform = CGAffineTransformTranslate(self.contentView.transform, movingDistance,0);
+                    }];
+                }
+        
+            }
+        
+        
     }else if(sender.state == UIGestureRecognizerStateEnded){
         self.leftMenuViewController.view.userInteractionEnabled = YES;
         self.view.userInteractionEnabled = NO;
-        __block  CGFloat movingDistance = fabsf(here);
-        [UIView animateWithDuration:(movingDistance*speedPixel) animations:^{
-            if(movingDistance > LeftMenuMaxWidth){
-                movingDistance = LeftMenuMaxWidth;
-            }
+
+        __block CGFloat distance = LeftMenuMaxWidth - here;
+        [UIView animateWithDuration:(distance*speedPixel) animations:^{
+           
             if (here > LeftMenuMaxWidth / 2 ) {
                 self.contentView.transform = CGAffineTransformMakeTranslation(LeftMenuMaxWidth, 0);
+                
             }else if(here < LeftMenuMaxWidth / 2){
                 self.contentView.transform = CGAffineTransformIdentity;
             }else{
                 self.contentView.transform = CGAffineTransformIdentity;
             }
-            
         } completion:^(BOOL finish){
             last = CGPointZero;
             self.view.userInteractionEnabled = YES;
             if (self.contentView.frame.origin.x == 0) {
                 self.leftMenuViewController.view.hidden = YES;
+                self.contentView.layer.shadowOffset = CGSizeMake(0, 0);
+            }else{
+                self.contentView.layer.shadowOpacity = 0.8;
+                self.contentView.layer.shadowColor = [UIColor blackColor].CGColor;
+                self.contentView.layer.shadowOffset = CGSizeMake(-2, -2);
+              
             }
+            
+            CGFloat here = self.contentView.frame.origin.x;
+            
+            if (here > 0) {
+                self.leftMenuViewController.view.hidden = NO;
+                self.leftLayer.colors = @[(__bridge id)[UIColor colorWithWhite:0.0f alpha:(LeftMenuMaxWidth - here)/(LeftMenuMaxWidth * MaxAlpha)].CGColor,(__bridge id)[UIColor colorWithWhite:0.0f alpha:(LeftMenuMaxWidth - here)/LeftMenuMaxWidth * MaxAlpha].CGColor];
+                self.leftMenuViewController.view.transform = CGAffineTransformMakeScale(1-(LeftMenuMaxWidth - here)/LeftMenuMaxWidth *(1-MinScale), 1 - (LeftMenuMaxWidth - here)/LeftMenuMaxWidth *(1-MinScale));
+            }
+
         }];
         
     }
