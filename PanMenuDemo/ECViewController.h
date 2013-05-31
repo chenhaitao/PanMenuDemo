@@ -11,5 +11,6 @@
 
 @interface ECViewController : UIViewController
 @property (weak, nonatomic) IBOutlet UIView *contentView;
+- (IBAction)showLeft:(id)sender;
 
 @end

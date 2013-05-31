@@ -137,6 +137,36 @@ static const CGFloat speedPixel = 0.0015;
     }
 }
 
+- (IBAction)showLeft:(id)sender {
+    self.view.userInteractionEnabled = NO;
+    self.leftMenuViewController.view.hidden = NO;
+    self.leftMenuViewController.view.transform = CGAffineTransformMakeScale(MinScale, MinScale);
+    self.leftLayer.colors = [NSArray arrayWithObjects: (__bridge  id)[UIColor colorWithWhite:0.0f alpha:1.0f].CGColor,(__bridge id)[UIColor colorWithWhite:0.0f alpha:1.0f].CGColor,nil];
+
+    [CATransaction begin];
+    [CATransaction setAnimationDuration:LeftMenuMaxWidth*speedPixel];
+    self.leftLayer.colors = [NSArray arrayWithObjects:(id)[UIColor colorWithWhite:0.0f alpha:0.0f].CGColor,(id)[UIColor colorWithWhite:0.0f alpha:0.0f].CGColor,nil];
+    [CATransaction commit];
+    
+    [UIView animateWithDuration:LeftMenuMaxWidth*speedPixel animations:^{
+        self.contentView.transform = CGAffineTransformMakeTranslation(LeftMenuMaxWidth, 0);
+        self.leftMenuViewController.view.transform = CGAffineTransformIdentity;
+        
+        
+    } completion:^(BOOL finish){
+        self.view.userInteractionEnabled = YES;
+        if (self.contentView.frame.origin.x == 0) {
+            self.leftMenuViewController.view.hidden = YES;
+            self.contentView.layer.shadowOffset = CGSizeMake(0, 0);
+        }else{
+            self.contentView.layer.shadowOpacity = 0.8;
+            self.contentView.layer.shadowColor = [UIColor blackColor].CGColor;
+            self.contentView.layer.shadowOffset = CGSizeMake(-2, -2);
+            
+        }
+    }];
+    
+}
 @end
 
 
